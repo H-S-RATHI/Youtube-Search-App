@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Results - YouTube Video Search</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #f9f9f9;
+        font-family: "Arial", sans-serif;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #ff0000;
+        font-size: 36px;
+      }
+
+      .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+
+      .list-group-item:hover {
+        background-color: #f2f2f2;
+      }
+
+      .video-thumbnail {
+        width: 120px;
+        height: 90px;
+        object-fit: cover;
+        margin-right: 15px;
+      }
+
+      .video-details {
+        flex-grow: 1;
+      }
+
+      .video-title {
+        font-size: 18px;
+        color: #333;
+      }
+
+      .video-link {
+        text-decoration: none;
+        color: #3498db;
+      }
+    </style>
+  </head>
+  <body class="container mt-5">
+    <h1 class="mb-4">Top YouTube Videos on '{{ topic }}'</h1>
+    <div class="list-group">
+      {% for video in results %}
+      <a href="{{ video.url }}" target="_blank" class="list-group-item">
+        <img
+          src="https://img.youtube.com/vi/{{ video.video_id }}/0.jpg"
+          alt="Video Thumbnail"
+          class="video-thumbnail"
+        />
+        <div class="video-details">
+          <div class="video-title">{{ video.title }}</div>
+          <div class="video-link">{{ video.url }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </body>
+</html>

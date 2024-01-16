@@ -1,0 +1,66 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <title>YouTube Video Search</title>
+    <style>
+      body {
+        background-color: #f9f9f9;
+        font-family: "Arial", sans-serif;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #ff0000;
+        font-size: 36px;
+      }
+
+      label {
+        font-size: 18px;
+        color: #606060;
+      }
+
+      .form-control {
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .btn-primary {
+        margin-top: 15px;
+        background-color: #ff0000;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body class="container mt-5">
+    <h1 class="mb-4">YouTube Video Search</h1>
+    <form action="/search" method="post">
+      <div class="form-group">
+        <label for="topic">Enter the topic to search on YouTube:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="topic"
+          name="topic"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </body>
+</html>
