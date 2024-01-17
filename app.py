@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 import requests 
 
-def search_youtube_videos(topic, max_results=5):
+def search_youtube_videos(topic, max_results=20):
     search_url = "https://www.googleapis.com/youtube/v3/search" 
-    params = {"key": "AIzaSyDPsRTGq8vVCYJYYcBfBgPxxgVmtn983_o",
+    params = {"key": "AIzaSyBPe3_QoOZM9igkomXjm4xTFQiR3hbw8vg",
               "q": topic,
               "part": "snippet",
               "maxResults": max_results,

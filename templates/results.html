@@ -26,15 +26,59 @@
         font-size: 36px;
       }
 
+      .controls {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        border: 2px double #000;
+        width: 15%;
+        display: flex;
+        justify-content: center;
+        padding: 8px 0;
+        margin-left: 85%;
+        cursor: move; /* Change cursor style to indicate dragability */
+        background-color: #efebeb;
+        transition: height 0.3s ease; /* Add a background color to make it visually distinct */
+        overflow: hidden;
+      }
+
+      .expand-collapse-icon {
+        font-size: 2.5em;
+        margin-left: 5px;
+        cursor: pointer;
+        margin-bottom: -50px;
+        margin-right: -16px;
+      }
+
+      button {
+        background-color: #ff4444;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 0 10px;
+      }
+
+      button:hover {
+        background-color: #ff3333;
+      }
+
+      #video-count-display {
+        font-size: 18px;
+        color: #333;
+      }
+
       .list-group-item {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         padding: 15px;
         margin-bottom: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;
         transition: background-color 0.3s ease;
+        z-index: -1;
       }
 
       .list-group-item:hover {
@@ -55,17 +99,35 @@
       .video-title {
         font-size: 18px;
         color: #333;
+        margin-bottom: 5px;
       }
 
       .video-link {
         text-decoration: none;
         color: #3498db;
       }
+      .controls.minimized {
+        height: 0px;
+        overflow: hidden;
+      }
     </style>
   </head>
   <body class="container mt-5">
     <h1 class="mb-4">Top YouTube Videos on '{{ topic }}'</h1>
-    <div class="list-group">
+    <div class="controls" draggable="true">
+      <button aria-label="Decrease video count" id="minus-button">-</button>
+      <span id="video-count-display"></span>
+      <button aria-label="Increase video count" id="plus-button">+</button>
+      <i
+        id="expand-collapse-icon"
+        class="expand-collapse-icon"
+        aria-label="Expand or collapse control panel"
+        role="button"
+        tabindex="0"
+        >▴</i
+      >
+    </div>
+    <div class="list-group" id="video-results">
       {% for video in results %}
       <a href="{{ video.url }}" target="_blank" class="list-group-item">
         <img
@@ -80,5 +142,150 @@
       </a>
       {% endfor %}
     </div>
+
+    <script>
+      // Get elements
+      const minusButton = document.getElementById("minus-button");
+      const plusButton = document.getElementById("plus-button");
+      const videoResults = document.getElementById("video-results");
+      const videoCountDisplay = document.getElementById("video-count-display");
+      const controls = document.querySelector(".controls");
+      const expandCollapseIcon = document.querySelector(
+        "#expand-collapse-icon"
+      );
+
+      let videoCount = 5;
+
+      function updateVideoCount() {
+        Array.from(videoResults.children).forEach((video, index) => {
+          if (index < videoCount) {
+            video.style.display = "flex";
+          } else {
+            video.style.display = "none";
+          }
+        });
+        videoCountDisplay.textContent = videoCount; // Display the current count of the videos showing
+      }
+
+      minusButton.addEventListener("click", function () {
+        if (videoCount > 1) {
+          videoCount -= 1;
+          updateVideoCount();
+        }
+      });
+
+      plusButton.addEventListener("click", function () {
+        if (videoCount < videoResults.children.length) {
+          videoCount += 1;
+          updateVideoCount();
+        }
+      });
+
+      // Initial display
+      updateVideoCount();
+
+      (function () {
+        const dragItem = document.querySelector(".controls");
+        const videoContainer = document.getElementById("video-results"); // Reference to the video container
+        let active = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        dragItem.addEventListener("mousedown", dragStart, false);
+        document.addEventListener("mouseup", dragEnd, false);
+        document.addEventListener("mousemove", drag, false);
+
+        dragItem.addEventListener("touchstart", dragStart, false);
+        document.addEventListener("touchend", dragEnd, false);
+        document.addEventListener("touchmove", drag, false);
+
+        function dragStart(e) {
+          if (e.type === "touchstart") {
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
+          } else {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+          }
+
+          if (e.target === dragItem) {
+            active = true;
+            // Bring the controls div to the front when dragging starts
+            dragItem.style.zIndex = "10";
+          }
+        }
+
+        function drag(e) {
+          if (active) {
+            e.preventDefault();
+
+            if (e.type === "touchmove") {
+              currentX = e.touches[0].clientX - initialX;
+              currentY = e.touches[0].clientY - initialY;
+            } else {
+              currentX = e.clientX - initialX;
+              currentY = e.clientY - initialY;
+            }
+
+            xOffset = currentX;
+            yOffset = currentY;
+
+            setTranslate(currentX, currentY, dragItem);
+
+            // Check if the controls are being dragged over the video container
+            const videoRect = videoContainer.getBoundingClientRect();
+            if (
+              currentX + dragItem.offsetWidth > videoRect.left &&
+              currentX < videoRect.right &&
+              currentY + dragItem.offsetHeight > videoRect.top &&
+              currentY < videoRect.bottom
+            ) {
+              // Bring the controls div to the front of the video container
+              dragItem.style.zIndex = "10";
+            } else {
+              // Bring the controls div to its original z-index
+              dragItem.style.zIndex = "10";
+            }
+          }
+        }
+
+        function dragEnd() {
+          initialX = currentX;
+          initialY = currentY;
+          active = false;
+          // Reset the z-index when dragging ends
+          dragItem.style.zIndex = "10";
+        }
+
+        function setTranslate(xPos, yPos, el) {
+          el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        }
+      })();
+
+      expandCollapseIcon.addEventListener("click", toggleExpansion);
+      expandCollapseIcon.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggleExpansion();
+        }
+      });
+
+      function toggleExpansion() {
+        let isMinimized = controls.classList.contains("minimized");
+        if (isMinimized) {
+          controls.classList.remove("minimized");
+          expandCollapseIcon.innerHTML = "▴"; // Upward arrow (expanded)
+          expandCollapseIcon.setAttribute("aria-expanded", "true");
+        } else {
+          controls.classList.add("minimized");
+          expandCollapseIcon.innerHTML = "▾"; // Downward arrow (collapsed)
+          expandCollapseIcon.setAttribute("aria-expanded", "false");
+        }
+      }
+    </script>
   </body>
 </html>
