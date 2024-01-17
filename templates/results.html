@@ -36,18 +36,18 @@
         justify-content: center;
         padding: 8px 0;
         margin-left: 85%;
-        cursor: move; /* Change cursor style to indicate dragability */
+        cursor: move;
         background-color: #efebeb;
-        transition: height 0.3s ease; /* Add a background color to make it visually distinct */
+        transition: height 0.3s ease;
         overflow: hidden;
       }
 
       .expand-collapse-icon {
         font-size: 2.5em;
-        margin-left: 5px;
+        margin-left: -5px;
+        margin-right: -28px;
         cursor: pointer;
         margin-bottom: -50px;
-        margin-right: -16px;
       }
 
       button {
@@ -151,7 +151,7 @@
       const videoCountDisplay = document.getElementById("video-count-display");
       const controls = document.querySelector(".controls");
       const expandCollapseIcon = document.querySelector(
-        "#expand-collapse-icon"
+        ".expand-collapse-icon"
       );
 
       let videoCount = 5;
@@ -164,7 +164,7 @@
             video.style.display = "none";
           }
         });
-        videoCountDisplay.textContent = videoCount; // Display the current count of the videos showing
+        videoCountDisplay.textContent = videoCount;
       }
 
       minusButton.addEventListener("click", function () {
@@ -186,7 +186,7 @@
 
       (function () {
         const dragItem = document.querySelector(".controls");
-        const videoContainer = document.getElementById("video-results"); // Reference to the video container
+        const videoContainer = document.getElementById("video-results");
         let active = false;
         let currentX;
         let currentY;
@@ -214,7 +214,7 @@
 
           if (e.target === dragItem) {
             active = true;
-            // Bring the controls div to the front when dragging starts
+
             dragItem.style.zIndex = "10";
           }
         }
@@ -236,7 +236,6 @@
 
             setTranslate(currentX, currentY, dragItem);
 
-            // Check if the controls are being dragged over the video container
             const videoRect = videoContainer.getBoundingClientRect();
             if (
               currentX + dragItem.offsetWidth > videoRect.left &&
@@ -244,10 +243,8 @@
               currentY + dragItem.offsetHeight > videoRect.top &&
               currentY < videoRect.bottom
             ) {
-              // Bring the controls div to the front of the video container
               dragItem.style.zIndex = "10";
             } else {
-              // Bring the controls div to its original z-index
               dragItem.style.zIndex = "10";
             }
           }
